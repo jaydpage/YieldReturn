@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace YieldReturn
@@ -20,6 +22,21 @@ namespace YieldReturn
                 var expected = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
                 result.Should().BeEquivalentTo(expected);
             }
+            
+            [TestCase(10)]
+            [TestCase(7)]
+            [TestCase(5)]
+            [TestCase(1)]
+            public void Looping_ShouldAlwaysDoSomethingUsefulTenTimes(int thisMany)
+            {
+                // Arrange
+                var doSomethingUseful = new DoSomethingUsefulDataBuilder().Build(); 
+                var sut = CreateSut(doSomethingUseful);
+                // Act
+                foreach (var value in sut.Get1To10().Take(thisMany)){}
+                // Assert
+                doSomethingUseful.Received().Execute(10);
+            }
         }
 
         [TestFixture]
@@ -35,6 +52,21 @@ namespace YieldReturn
                 // Assert
                 var expected = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
                 result.Should().BeEquivalentTo(expected);
+            }
+
+            [TestCase(10)]
+            [TestCase(7)]
+            [TestCase(5)]
+            [TestCase(1)]
+            public void Looping_ShouldDoSomethingUsefulBasedOnNumberOfRequestedItems (int thisMany)
+            {
+                // Arrange
+                var doSomethingUseful = new DoSomethingUsefulDataBuilder().Build();
+                var sut = CreateSut(doSomethingUseful);
+                // Act
+                foreach (var value in sut.Get1To10().Take(thisMany)) { }
+                // Assert
+                doSomethingUseful.Received().Execute(thisMany);
             }
         }
 
