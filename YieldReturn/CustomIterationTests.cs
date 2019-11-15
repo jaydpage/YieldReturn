@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -28,22 +30,22 @@ namespace YieldReturn
     }
 
     [TestFixture]
-    [Ignore("Figure out how this works")]
     public class ExecuteWithYield
     {
-      [TestCase(10)]
-      [TestCase(7)]
-      [TestCase(5)]
-      [TestCase(1)]
-      public void ShouldDoSomethingUsefulBasedOnNumberOfRequestedItems(int count)
+      [TestCase(10, new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })]
+      [TestCase(7, new [] { 1, 2, 3, 4, 5, 6, 7 })]
+      [TestCase(5, new [] { 1, 2, 3, 4, 5 })]
+      [TestCase(1, new [] { 1 })]
+      public void ShouldDoSomethingUsefulBasedOnNumberOfRequestedItems(int count, int [] expected)
       {
         // Arrange
         var doSomethingUseful = new DoSomethingUsefulDataBuilder().Build();
         var give = 10;
         var sut = CreateSut(doSomethingUseful);
         // Act
-        var result = sut.Execute(give).Take(count);
+        var result = sut.ExecuteWithYield(give).Take(count);
         // Assert
+        result.Should().BeEquivalentTo(expected);
         doSomethingUseful.Received(count).Execute(Arg.Any<int>());
       }
     }
@@ -51,7 +53,7 @@ namespace YieldReturn
     private static CustomIteration CreateSut(IDoSomethingUseful doSomethingUseful = null)
     {
       doSomethingUseful ??= new DoSomethingUsefulDataBuilder().Build();
-      return new CustomIteration(doSomethingUseful, new Generate());
+      return new CustomIteration(doSomethingUseful);
     }
   }
 }

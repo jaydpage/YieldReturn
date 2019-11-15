@@ -5,12 +5,10 @@ namespace YieldReturn
   public class CustomIteration
   {
     private readonly IDoSomethingUseful _doSomethingUseful;
-    private readonly Generate _generate;
 
-    public CustomIteration(IDoSomethingUseful doSomethingUseful, Generate generate)
+    public CustomIteration(IDoSomethingUseful doSomethingUseful)
     {
       _doSomethingUseful = doSomethingUseful;
-      _generate = generate;
     }
 
     public IEnumerable<int> Execute(int give)
@@ -34,7 +32,6 @@ namespace YieldReturn
       while (i < give)
       {
         _doSomethingUseful.Execute(i);
-
         yield return ++i;
       }
     }
