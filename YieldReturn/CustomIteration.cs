@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace YieldReturn
 {
@@ -13,19 +13,29 @@ namespace YieldReturn
       _generate = generate;
     }
 
-    public void Execute(int give, int take)
+    public IEnumerable<int> Execute(int give)
     {
-      foreach (var total in _generate.CreateList(give).Take(take))
+      var i = 0;
+      var items = new List<int>();
+
+      while (i < give)
       {
-        _doSomethingUseful.Execute(total);
+        _doSomethingUseful.Execute(i);
+        items.Add(++i);
       }
+
+      return items;
     }
 
-    public void ExecuteWithYield(int give, int take)
+    public IEnumerable<int> ExecuteWithYield(int give)
     {
-      foreach (var number in _generate.Yield(give).Take(take))
+      var i = 0;
+
+      while (i < give)
       {
-        _doSomethingUseful.Execute(number);
+        _doSomethingUseful.Execute(i);
+
+        yield return ++i;
       }
     }
   }
